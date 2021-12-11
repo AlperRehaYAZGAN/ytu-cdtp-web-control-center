@@ -15,6 +15,11 @@
       type="text/css"
       href="{{ url_for('static',filename='styles/style.css') }}"
     />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div class="container">
@@ -22,7 +27,7 @@
         <div class="logo-container">
           <img
             src="{{ url_for('static',filename='img/ytu-logo.png') }}"
-            alt="doge logo"
+            alt="ytu logo"
             class="logo-img"
           />
           <h1 class="logo-text">
@@ -33,17 +38,19 @@
       <div class="content-container">
         <div class="active-users-panel" id="active-user-container">
           <h3 class="panel-title">Road Status:</h3>
-          <h4>  Road-1 : Success</h4>
-          <h4>  Road-2 : Unavailable</h4>
+          <h4>Road-1 : Success</h4>
+          <h4>Road-2 : Unavailable</h4>
         </div>
         <div class="video-chat-container">
           <h2 class="talk-info" id="talking-with-info">
             Monitor Highway Cameras:
           </h2>
           <div class="video-container">
-            {% for stream in streams %}
-            <img src="{{stream}}" class="remote-video" id="remote-video" />
-            {% endfor %}
+            <img
+              src="http://localhost:5000/proxy_stream"
+              class="remote-video"
+              id="remote-video"
+            />
           </div>
         </div>
       </div>
