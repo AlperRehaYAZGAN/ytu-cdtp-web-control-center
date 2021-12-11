@@ -42,14 +42,6 @@ app = Flask(__name__)
 # start time
 start_time = time.time()
 
-# flask main function
-if __name__ == '__main__':
-    print("PC Server initializing...")
-    # run from dotenv
-    app.run(app,host=PC_APP_BIND,port=PC_APP_PORT)
-    print("PC Server Port: ", PC_APP_PORT)
-    print("PC Server Initialization Finished")
-    pass
 
 def on_anomalia(data):
     # decode incoming data ({"status" : "ANOMALY_CAR_EXPLOIDATION", "time" : "2020-12-08T12:00:00.000Z"})
@@ -93,17 +85,55 @@ def system_status():
 # GET /monitor - return monitor page to display camera
 @app.route('/monitor') 
 def index(): 
-   return render_template('index.html', stream_url = "http://" + PI_STREAM_HOST + ":" + str(PI_STREAM_PORT) + PI_STREAM_URL)
+   return render_template('index-url.html', stream_url = "/proxy_stream")
 
 
 
-CAMERA_STREAM_URL = "http://" + PI_STREAM_HOST + ":" + str(PI_STREAM_PORT) + PI_STREAM_URL
+CAMERA_STREAM_URL = "http://" + PI_STREAM_HOST + ":" + str(PI_STREAM_PORT) + "/" + PI_STREAM_URL
 @app.route("/proxy_stream")
 def streamed_proxy():
     r = requests.get(CAMERA_STREAM_URL, stream=True)
     return Response(r.iter_content(chunk_size=10*1024),
-                    content_type=r.headers['Content-Type'])
+                    content_type=r.headers['Content-Type']
+    )
 
+
+#
+#   Socket Implementation
+#
+from flask_socketio import SocketIO
+sio = SocketIO(app)
+
+# @sio.on('connect')
+def on_connect():
+    print("Client connected")
+
+sio.on('connect', on_connect)
+
+
+# disconnect
+# @sio.on('disconnect')
+def on_disconnect():
+    print("Client disconnected")
+
+sio.on('disconnect', on_disconnect)
+
+
+# on error
+@sio.on_error()
+def chat_error_handler(e):
+    print('An error has occurred: ' + str(e))
+
+
+
+@sio.on('camera-stream')
+def on_camera_stream(data):
+    # emit camera stream to connected clients
+    print("camera event received")
+    sio.emit('camera-listener', {'data_image': data})
+    pass
+
+# sio.on('camera-stream', on_camera_stream)
 
 
 
@@ -112,6 +142,11 @@ def main():
 
 # flask main function
 if __name__ == '__main__':
-    print("App initializing...")
-    main()
+    print("PC Server initializing...")
+    # run from dotenv
+    app.run(app,host=PC_APP_BIND,port=PC_APP_PORT)
+    print("PC Server Port: ", PC_APP_PORT)
+    # run socket
+    sio.run(app)
+    print("PC Server Initialization Finished")
     pass

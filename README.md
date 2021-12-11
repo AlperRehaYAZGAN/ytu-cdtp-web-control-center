@@ -25,8 +25,8 @@ Default Env
 PC_APP_BIND="0.0.0.0"
 PC_APP_PORT=5000
 PI_STREAM_HOST="localhost"
-PI_STREAM_PORT=5000
-PI_STREAM_URL="/video_buff"
+PI_STREAM_PORT=5001
+PI_STREAM_URL="video_feed"
 ```  
 
 # 4-URLs
