@@ -93,7 +93,7 @@ def system_status():
 # GET /monitor - return monitor page to display camera
 @app.route('/monitor') 
 def index(): 
-   return render_template('index.html')
+   return render_template('index.html', stream_url = "http://" + PI_STREAM_HOST + ":" + str(PI_STREAM_PORT) + PI_STREAM_URL)
 
 
 
