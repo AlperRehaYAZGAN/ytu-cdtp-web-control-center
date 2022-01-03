@@ -15,20 +15,17 @@ import cv2
 from dotenv import load_dotenv
 load_dotenv(dotenv_path= getcwd() + '/' + '.env')
 
-# dotenv initial values
-PI_STREAM_HOST = getenv("PI_STREAM_HOST", "localhost")
-PI_STREAM_PORT = int(getenv("PI_STREAM_PORT", "5000"))
-PI_STREAM_URL = getenv("PI_STREAM_URL","/video_feed")
-PI_CAMERA_PORT = int(getenv('PI_CAMERA_PORT',0))
-
-# print env vars
-print("PI_STREAM_HOST:", PI_STREAM_HOST)
-print("PI_STREAM_PORT:", PI_STREAM_PORT)
-print("PI_STREAM_URL:", PI_STREAM_URL)
-print("PI_CAMERA_PORT:", PI_CAMERA_PORT)
-
 # docs: https://stackoverflow.com/questions/55651836/how-can-i-fetch-live-stream-from-url
-opencv_catcher = cv2.VideoCapture("http://localhost:5001/video_feed") 
+CV2_STREAM_FROM_1 = getenv("CV2_STREAM_FROM_1",0)
+# check if CV2_STREAM_FROM_1 is a valid camera port
+if CV2_STREAM_FROM_1.isdigit():
+    # cast to int
+    CV2_STREAM_FROM_1 = int(CV2_STREAM_FROM_1)
+# print CV2_STREAM_FROM_2
+print("CV2_STREAM_FROM_1:", CV2_STREAM_FROM_1)
+opencv_catcher = cv2.VideoCapture(CV2_STREAM_FROM_1,cv2.CAP_DSHOW) 
+opencv_catcher.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+opencv_catcher.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
 
 
 def main():
@@ -36,7 +33,7 @@ def main():
         try:
             # Display frames in main program
             if opencv_catcher.isOpened():
-                status, frame = opencv_catcher.read()
+                (status, frame) = opencv_catcher.read()
                 # Press Q on keyboard to stop recording
                 cv2.imshow('OpenCV Catcher', frame)
             
