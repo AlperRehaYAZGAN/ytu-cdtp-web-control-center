@@ -80,28 +80,23 @@ sio.on('disconnect', on_disconnect)
 def chat_error_handler(e):
     print('An error has occurred: ' + str(e))
 
+
+# on anomaly-button-1-clicked
+@sio.on('anomaly-button-1-clicked')
+def anomaly_button_1_clicked(data):
+    sio.emit('anomaly-button-1-clicked', data)
+    print("Anomaly Button 1 Clicked")
+    pass
+
+# on anomaly-button-2-clicked
+@sio.on('anomaly-button-2-clicked')
+def anomaly_button_2_clicked(data):
+    sio.emit('anomaly-button-2-clicked', data)
+    print("Anomaly Button 2 Clicked")
+    pass
+
 # start time
 start_time = time.time()
-
-
-def on_anomalia(data):
-    # decode incoming data ({"status" : "ANOMALY_CAR_EXPLOIDATION", "time" : "2020-12-08T12:00:00.000Z"})
-    data_anomaly = json.loads(data)
-    # get status if exist
-    if "status" in data_anomaly:
-        # get status
-        anomaly_status = data_anomaly["status"]
-        # get time
-        issued_at = data_anomaly["time"]
-        # print anomaly
-        print("Anomaly:", anomaly_status, "at", issued_at)
-        # handle anomaly
-        # handle(anomaly_status, issued_at)
-        pass
-    else:
-        print("No anomaly data found")
-        pass
-    pass
 
 
 # GET / - return running app info
