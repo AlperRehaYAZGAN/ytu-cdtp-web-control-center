@@ -23,12 +23,20 @@ SERVER_APP_PORT = int(os.getenv("SERVER_APP_PORT", "5000"))
 #   Flask Web App Dependencies
 #
 from flask import Flask, render_template, Response
-import requests
 app = Flask(__name__)
 
 #   Raspberry Pi Camera Dependencies
 #
 import cv2
+# print opencv version
+print("OpenCV version: {}".format(cv2.__version__))
+
+# path to video and cascade model
+car_cascade_src = os.path.join(os.getcwd(), 'haarcascades','cars.xml')
+# print paths
+print("Cascade path: {}".format(car_cascade_src))
+# CASCADE CLASSIFIER
+car_cascade = cv2.CascadeClassifier(car_cascade_src)
 
 # camera port from environment variable
 CV2_STREAM_FROM_1 = os.getenv("CV2_STREAM_FROM_1","0")
@@ -129,6 +137,31 @@ def index():
 def proxy_frame_1(): 
     while True: 
         success, frame = pc_stream_capture_1.read() 
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        cars = car_cascade.detectMultiScale(gray, 1.1, 1)
+
+        # highway line borders
+        # left border is 1/4 of the screen width, right border is 3/4 of the screen width. 
+        # Notify with blue line
+        cv2.line(frame, (int(frame.shape[1]/5), 0), (int(frame.shape[1]/5), frame.shape[0]), (255, 0, 0), 2)
+        cv2.line(frame, (int(frame.shape[1]*4/5), 0), (int(frame.shape[1]*4/5), frame.shape[0]), (255, 0, 0), 2)
+
+
+        for (x,y,w,h) in cars:
+            # check if vehicle exit from highway line (left border or right border)
+            # if attached to left border, vehicle is leaving from highway red box
+            # if attached to right border, vehicle is leaving from highway red box
+            # otherwise, vehicle is staying on highway green box
+            if (x < int(frame.shape[1]/5)):
+                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
+                pass
+            elif (x > int(frame.shape[1]*4/5)):
+                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
+                pass
+            else:
+                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+                pass  
         try:
             ret, buffer = cv2.imencode('.jpg', frame) #, cv2.flip(frame,1))
             frame = buffer.tobytes()
