@@ -134,7 +134,7 @@ def anomaly_button_1_clicked(data):
 def anomaly_button_1_clicked(data):
     # log anomaly-button-1-clicked
     print("Anomaly-button-1-test-clicked:", data)
-    sio.emit('anomaly-camera-1-test', {'data': 'test'})
+    sio.emit('anomaly-button-1-clicked', {'type': 'TEST'})
     pass
 
 # on anomaly-button-2-clicked
@@ -150,7 +150,7 @@ def anomaly_button_2_clicked(data):
 def anomaly_button_1_clicked(data):
     # log anomaly-button-2-test-clicked
     print("Anomaly-button-2-test-clicked:", data)
-    sio.emit('anomaly-camera-2-test', {'data': 'test'})
+    sio.emit('anomaly-button-2-clicked', {'type': 'TEST'})
     pass
 
 # on camera-1-request

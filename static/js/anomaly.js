@@ -121,7 +121,7 @@ anomalyButton2Test.onclick = function () {
 socket.on('anomaly-detected-1', function (data) {
     console.log("Anomaly detected: ", data);
     // set color to red
-    anomalyButton1.style.backgroundColor = '#ff0000';
+    anomalyButton1.className = "btn btn-danger";
     // set anomaly span content
     camera1anomaly.innerHTML = data.type;
     // set current isodate span content
@@ -129,6 +129,16 @@ socket.on('anomaly-detected-1', function (data) {
     // if the anomaly button is clicked, send a message to the server
     anomalyButton1.onclick = function () {
         socket.emit('anomaly-button-1-clicked', {type : data.type});
+        // after anomaly button is clicked, change btnPrimary to danger. After 200 ms change back to normal
+        anomalyButton1.className = "btn btn-danger";
+        setTimeout(function () {
+            anomalyButton1.className = "btn btn-primary";
+        }
+        , 200);
+        // set anomaly span content to empty
+        camera1anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera1date.innerHTML = "waiting";
     };
 
 });
@@ -137,7 +147,7 @@ socket.on('anomaly-detected-1', function (data) {
 socket.on('anomaly-detected-2', function (data) {
     console.log("Anomaly detected: ", data);
     // set color to red
-    anomalyButton2.style.backgroundColor = '#ff0000';
+    anomalyButton2.className = "btn btn-danger";
     // set anomaly span content
     camera2anomaly.innerHTML = data.type;
     // set current isodate span content
@@ -145,24 +155,34 @@ socket.on('anomaly-detected-2', function (data) {
     // if the anomaly button is clicked, send a message to the server
     anomalyButton2.onclick = function () {
         socket.emit('anomaly-button-2-clicked', {type : data.type});
+        // after anomaly button is clicked, change btnPrimary to danger. After 200 ms change back to normal
+        anomalyButton2.className = "btn btn-danger";
+        setTimeout(function () {
+            anomalyButton2.className = "btn btn-primary";
+        }
+        , 200);
+        // set anomaly span content to empty
+        camera2anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera2date.innerHTML = "waiting";
     };
 
 });
 
 
-document.getElementById('anomaly-button-1').onclick = function () {
+anomalyButton1.onclick = function () {
     // buton clicked log
     console.log("Anomaly button clicked 1");
     // set color to normal
-    document.getElementById('anomaly-button-1').style.backgroundColor = '#00ff00';
+    anomalyButton1.className = "btn btn-primary";
     socket.emit('anomaly-button-1-clicked', { type: "TEST"});
 };
 
-document.getElementById('anomaly-button-2').onclick = function () {
+anomalyButton2.onclick = function () {
     // buton clicked log
     console.log("Anomaly button clicked 2");
     // set color to normal
-    document.getElementById('anomaly-button-2').style.backgroundColor = '#00ff00';
+    anomalyButton2.className = "btn btn-primary";
     socket.emit('anomaly-button-2-clicked', { type: "TEST"});
 };
 
