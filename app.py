@@ -124,23 +124,45 @@ def chat_error_handler(e):
 # on anomaly-button-1-clicked
 @sio.on('anomaly-button-1-clicked')
 def anomaly_button_1_clicked(data):
+    # log anomaly-button-1-clicked
+    print("Area-1 Anomaly Order:", data)
     sio.emit('anomaly-button-1-clicked', data)
     pass
 
-# on camera-1-request
-@sio.on('camera-1-request')
-def camera_1_change_cascade(data):
-    changeTo = int(data["to"])
-    if(changeTo != 0 and changeTo > 0 and changeTo < 5):
-        cache.set("req_camera_1", changeTo)
-        sio.emit('camera-1-changed', {"to": int(cache.get("req_camera_1"))})
-        pass
+# on anomaly-btn-1-test-clicked
+@sio.on('anomaly-btn-1-test-clicked')
+def anomaly_button_1_clicked(data):
+    # log anomaly-button-1-clicked
+    print("Anomaly-button-1-test-clicked:", data)
+    sio.emit('anomaly-camera-1-test', {'data': 'test'})
     pass
 
 # on anomaly-button-2-clicked
 @sio.on('anomaly-button-2-clicked')
 def anomaly_button_2_clicked(data):
+    # log anomaly-button-2-clicked
+    print("Area-2 Anomaly Order:", data)
     sio.emit('anomaly-button-2-clicked', data)
+    pass
+
+# on anomaly-btn-2-test-clicked
+@sio.on('anomaly-btn-2-test-clicked')
+def anomaly_button_1_clicked(data):
+    # log anomaly-button-2-test-clicked
+    print("Anomaly-button-2-test-clicked:", data)
+    sio.emit('anomaly-camera-2-test', {'data': 'test'})
+    pass
+
+# on camera-1-request
+@sio.on('camera-1-request')
+def camera_1_change_cascade(data):
+    # log data
+    print("camera-1-request:", data)
+    changeTo = int(data["to"])
+    if(changeTo != 0 and changeTo > 0 and changeTo < 5):
+        cache.set("req_camera_1", changeTo)
+        sio.emit('camera-1-changed', {"to": int(cache.get("req_camera_1"))})
+        pass
     pass
 
 # on camera-2-request

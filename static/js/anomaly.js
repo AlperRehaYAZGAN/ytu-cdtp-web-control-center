@@ -95,13 +95,25 @@ camera2tohumanonroad.onclick = function () {
 // if test1 button clicked
 anomalyButton1Test.onclick = function () {
     console.log("anomalyButton1Test button clicked");
-    socket.emit('anomaly-btn-1-test', {});
+    socket.emit('anomaly-btn-1-test-clicked', {});
+    // button clicked so change btnPrimary to danger. After 200 ms change back to normal
+    anomalyButton1Test.className = "btn btn-danger";
+    setTimeout(function () {
+        anomalyButton1Test.className = "btn btn-primary";
+    }
+    , 200);
 };
 
 // if test2 button clicked
 anomalyButton2Test.onclick = function () {
     console.log("anomalyButton2Test button clicked");
-    socket.emit('anomaly-btn-2-test', {});
+    socket.emit('anomaly-btn-2-test-clicked', {});
+    // button clicked so change btnPrimary to danger. After 200 ms change back to normal
+    anomalyButton2Test.className = "btn btn-danger";
+    setTimeout(function () {
+        anomalyButton2Test.className = "btn btn-primary";
+    }
+    , 200);
 };
 
 
