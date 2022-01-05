@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>YTu CDTP 84. Grup - Monitor</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <div class="container-fluid">
+        <img
+        src="{{ url_for('static',filename='img/ytu-logo.png') }}"
+        alt="ytu logo"
+        class="logo-img"
+        height="50px"
+        width="50px"
+      />
+        <a class="navbar-brand fw-bold">YTU CDTP Highway Web Center</a>
+        <div class="d-flex">
+          <input
+            class="form-control me-2"
+            type="search"
+            id="displaytext"
+            placeholder="Display on LCD"
+            aria-label="displaylcd"
+          />
+          <button id="btn-display" class="btn btn-outline-success">Display</button>
+        </div>
+      </div>
+    </nav>
+
+    <div style="height: 3rem"></div>
+    <div class="container-sm">
+      <div class="row d-flex justify-content-center">
+        <div class="col d-flex justify-content-center">
+          <div class="card" style="width: 480px">
+            <img
+              src="{{ stream_url_1 }}"
+              class="card-img-top"
+              width="480px"
+              height="360px"
+              alt="..."
+            />
+            <div class="card-body">
+              <h5 class="card-title">Camera 1</h5>
+              <p class="card-text">Camera stream from area of A highway</p>
+              <p class="card-text">Please select anomaly filter:</p>
+              <button id="camera1tonormal" type="button" class="btn btn-primary">Normal</button>
+              <button id="camera1tofire" type="button" class="btn btn-primary">Fire</button>
+              <button id="camera1tocarexit" type="button" class="btn btn-primary">Car Exit</button>
+              <button id="camera1tohumanonroad" type="button" class="btn btn-primary">Human On Road</button>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                Camera: <span id="camera1status">LISTENING_NORMAL</span>
+              </li>
+              <li class="list-group-item">Anomaly State: <span id="camera1anomaly">Normal</span></li>
+              <li class="list-group-item">
+                Anomaly Date: <span id="camera1date">undefined</span>
+              </li>
+            </ul>
+            <div class="card-body">
+              <button id="anomaly-button-1" type="button" class="btn btn-primary">Action</button>
+              <button id="anomaly-button-1-test" type="button" class="btn btn-primary">Test Signal</button>
+            </div>
+          </div>
+        </div>
+        <div class="col d-flex justify-content-center">
+          <div class="card" style="width: 480px">
+            <img
+              src="{{ stream_url_2 }}"
+              class="card-img-top"
+              width="480px"
+              height="360px"
+              alt="..."
+            />
+            <div class="card-body">
+              <h5 class="card-title">Camera 2</h5>
+              <p class="card-text">Camera stream from area of B highway</p>
+              <p class="card-text">Please select anomaly filter:</p>
+              <button id="camera2tonormal" type="button" class="btn btn-primary">Normal</button>
+              <button id="camera2tofire" type="button" class="btn btn-primary">Fire</button>
+              <button id="camera2tocarexit" type="button" class="btn btn-primary">Car Exit</button>
+              <button id="camera2tohumanonroad" type="button" class="btn btn-primary">Human On Road</button>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                Camera: <span id="camera2status">LISTENING_NORMAL</span>
+              </li>
+              <li class="list-group-item">Anomaly State <span id="camera2anomaly">Normal</span></li>
+              <li class="list-group-item">
+                Anomaly Date: <span id="camera2date">undefined</span>
+              </li>
+            </ul>
+            <div class="card-body">
+                <button id="anomaly-button-2" type="button" class="btn btn-primary">Action</button>
+                <button id="anomaly-button-2-test" type="button" class="btn btn-primary">Test Signal</button>  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <footer class="py-3 my-4">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+          <li class="nav-item">
+            <a href="#" class="nav-link px-2 text-muted">84. Grup</a>
+          </li>
+        </ul>
+        <p class="text-center text-muted">Alper Reha YAZGAN © 2022</p>
+      </footer>
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Reference to your JavaScript file -->
+    <script src="{{ url_for('static',filename='js/anomaly.js') }}"></script>
+  </body>
+</html>
