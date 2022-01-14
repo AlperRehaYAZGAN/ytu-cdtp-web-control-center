@@ -201,6 +201,13 @@ socket.on('camera-1-changed', function (data) {
         camera1tohumanonroad.className = "btn btn-secondary";
         // set status span content
         camera1status.innerHTML = "LISTENING_NORMAL";
+        // set anomaly span content to empty
+        camera1anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera1date.innerHTML = "waiting";
+        // change button onclick to void (refresh state)
+        anomalyButton1.className = "btn btn-primary";
+        anomalyButton1.onclick = function () {};
     } else if(changedTo == 2) {
         camera1tonormal.className = "btn btn-secondary";
         camera1tofire.className = "btn btn-primary";
@@ -208,6 +215,12 @@ socket.on('camera-1-changed', function (data) {
         camera1tohumanonroad.className = "btn btn-secondary";
         // set status span content
         camera1status.innerHTML = "LISTENING_FIRE";
+        // set anomaly span content to empty
+        camera1anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera1date.innerHTML = "waiting";
+        anomalyButton1.className = "btn btn-primary";
+        anomalyButton1.onclick = function () {};
     } else if(changedTo == 3) {
         camera1tonormal.className = "btn btn-secondary";
         camera1tofire.className = "btn btn-secondary";
@@ -215,6 +228,12 @@ socket.on('camera-1-changed', function (data) {
         camera1tohumanonroad.className = "btn btn-secondary";
         // set status span content
         camera1status.innerHTML = "LISTENING_CAR_EXIT";
+        // set anomaly span content to empty
+        camera1anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera1date.innerHTML = "waiting";
+        anomalyButton1.className = "btn btn-primary";
+        anomalyButton1.onclick = function () {};
     } else if(changedTo == 4) {
         camera1tonormal.className = "btn btn-secondary";
         camera1tofire.className = "btn btn-secondary";
@@ -222,6 +241,12 @@ socket.on('camera-1-changed', function (data) {
         camera1tohumanonroad.className = "btn btn-primary";
         // set status span content
         camera1status.innerHTML = "LISTENING_HUMAN_ON_ROAD";
+        // set anomaly span content to empty
+        camera1anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera1date.innerHTML = "waiting";
+        anomalyButton1.className = "btn btn-primary";
+        anomalyButton1.onclick = function () {};
     }
 });
 
@@ -239,6 +264,12 @@ socket.on('camera-2-changed', function (data) {
         camera2tohumanonroad.className = "btn btn-secondary";
         // set status span content
         camera2status.innerHTML = "LISTENING_NORMAL";
+        // set anomaly span content to empty
+        camera2anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera2date.innerHTML = "waiting";
+        anomalyButton2.className = "btn btn-primary";
+        anomalyButton2.onclick = function () {};
     } else if(changedTo == 2) {
         camera2tonormal.className = "btn btn-secondary";
         camera2tofire.className = "btn btn-primary";
@@ -246,13 +277,25 @@ socket.on('camera-2-changed', function (data) {
         camera2tohumanonroad.className = "btn btn-secondary";
         // set status span content
         camera2status.innerHTML = "LISTENING_FIRE";
+        // set anomaly span content to empty
+        camera2anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera2date.innerHTML = "waiting";
+        anomalyButton2.className = "btn btn-primary";
+        anomalyButton2.onclick = function () {};
     } else if(changedTo == 3) {
         camera2tonormal.className = "btn btn-secondary";
         camera2tofire.className = "btn btn-secondary";
         camera2tocarexit.className = "btn btn-primary";
         camera2tohumanonroad.className = "btn btn-secondary";
-        // set status span content
+        // set status spasan content
         camera2status.innerHTML = "LISTENING_CAR_EXIT";
+        // set anomaly span content to empty
+        camera2anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera2date.innerHTML = "waiting";
+        anomalyButton2.className = "btn btn-primary";
+        anomalyButton2.onclick = function () {};
     } else if(changedTo == 4) {
         camera2tonormal.className = "btn btn-secondary";
         camera2tofire.className = "btn btn-secondary";
@@ -260,5 +303,35 @@ socket.on('camera-2-changed', function (data) {
         camera2tohumanonroad.className = "btn btn-primary";
         // set status span content
         camera2status.innerHTML = "LISTENING_HUMAN_ON_ROAD";
+        // set anomaly span content to empty
+        camera2anomaly.innerHTML = "Normal";
+        // set current isodate span content to empty
+        camera2date.innerHTML = "waiting";
+        anomalyButton2.className = "btn btn-primary";
+        anomalyButton2.onclick = function () {};
     }
 });
+
+
+// led-refresh-1 button
+const btnLedRefresh1 = document.getElementById('led-refresh-1');
+// led-refresh-2 button
+const btnLedRefresh2 = document.getElementById('led-refresh-2');
+
+// btn led-refresh-1 onclick
+btnLedRefresh1.onclick = function () {
+    // buton clicked log
+    console.log("LED refresh 1");
+    // set color to normal
+    btnLedRefresh1.className = "btn btn-primary";
+    socket.emit('anomaly-button-1-clicked', { type: "REFRESH"});
+}
+
+// btn led-refresh-2 onclick
+btnLedRefresh2.onclick = function () {
+    // buton clicked log
+    console.log("LED refresh 2");
+    // set color to normal
+    btnLedRefresh2.className = "btn btn-primary";
+    socket.emit('anomaly-button-2-clicked', { type: "REFRESH"});
+}

@@ -77,12 +77,65 @@ pc_stream_capture_2.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
 if not pc_stream_capture_1.isOpened():
     print("Unable to open camera stream 1")
     exit()
-    pass
 if not pc_stream_capture_2.isOpened():
     print("Unable to open camera stream 2")
     exit()
-    pass
 
+import time
+import serial
+from crccheck.crc import Crc32Mpeg2
+from multiprocessing import Queue
+
+import serial.tools.list_ports as port_list
+ports = list(port_list.comports())
+for p in ports:
+    print ("port: ",p)
+
+class SerialCom:
+    def __init__(self, port="COM3", baud=9600, msgsize=7,):
+        while True:
+            try:
+                self.s = serial.Serial(port, baud)
+                break
+            except Exception as e:
+                print("port yok!", e)
+
+        self.msgsize = msgsize
+        self.q = Queue(10)
+        self.sendmsg = []
+
+        self.header1 = 0b0100
+        self.header2 = 0b0101
+
+    def writeSerialPort(self, q):
+        try:
+            self.sendmsg = q.get(timeout=0.001)
+        except:
+            pass
+
+        if len(self.sendmsg) > 0:
+            self.sendmsg.insert(0, self.header1)
+            self.sendmsg.insert(1, self.header2)
+
+            calcCrc = Crc32Mpeg2.calc(self.sendmsg)
+
+            first = (calcCrc >> 24) & 0xFF
+            second = (calcCrc >> 16) & 0xFF
+            third = (calcCrc >> 8) & 0xFF
+            fourth = (calcCrc & 0xFF)
+
+            self.sendmsg.append(first)
+            self.sendmsg.append(second)
+            self.sendmsg.append(third)
+            self.sendmsg.append(fourth)
+
+            self.s.write(self.sendmsg)
+            s = list(self.sendmsg)
+            print(s)
+            self.sendmsg = []
+
+port = SerialCom()
+msgQueue = Queue(10)
 
 from flask_caching import Cache
 
@@ -126,6 +179,15 @@ def chat_error_handler(e):
 def anomaly_button_1_clicked(data):
     # log anomaly-button-1-clicked
     print("Area-1 Anomaly Order:", data)
+    # button clicked
+    if( data["type"] == "REFRESH" ):
+        sio.emit('anomaly-button-1-clicked', {"type": "REFRESH"})
+        msgQueue.put([4])
+        port.writeSerialPort(msgQueue)
+    elif( data["type"] != "TEST" ):
+        msgQueue.put([1])
+        port.writeSerialPort(msgQueue)
+
     sio.emit('anomaly-button-1-clicked', data)
     pass
 
@@ -142,6 +204,14 @@ def anomaly_button_1_clicked(data):
 def anomaly_button_2_clicked(data):
     # log anomaly-button-2-clicked
     print("Area-2 Anomaly Order:", data)
+    # button clicked
+    if( data["type"] == "REFRESH" ):
+        sio.emit('anomaly-button-1-clicked', {"type": "REFRESH"})
+        msgQueue.put([4])
+        port.writeSerialPort(msgQueue)
+    elif( data["type"] != "TEST" ):
+        msgQueue.put([3])
+        port.writeSerialPort(msgQueue)
     sio.emit('anomaly-button-2-clicked', data)
     pass
 
@@ -150,7 +220,7 @@ def anomaly_button_2_clicked(data):
 def anomaly_button_1_clicked(data):
     # log anomaly-button-2-test-clicked
     print("Anomaly-button-2-test-clicked:", data)
-    sio.emit('anomaly-button-2-clicked', {'type': 'TEST'})
+    sio.emit('anomaly-button-2-clicked', { 'type': 'TEST' })
     pass
 
 # on camera-1-request
@@ -231,7 +301,6 @@ def proxy_frame_normal_1():
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             req_camera_1 = int(cache.get("req_camera_1"))
 
-
             if (req_camera_1 == 2):
                 # 2 is fire anomaly
                 fires = fire_cascade.detectMultiScale(gray,1.1,1)
@@ -251,22 +320,24 @@ def proxy_frame_normal_1():
                 # highway line borders
                 # left border is 1/4 of the screen width, right border is 3/4 of the screen width. 
                 # Notify with blue line
-                cv2.line(frame, (int(frame.shape[1]/5), 0), (int(frame.shape[1]/5), frame.shape[0]), (255, 0, 0), 2)
-                cv2.line(frame, (int(frame.shape[1]*4/5), 0), (int(frame.shape[1]*4/5), frame.shape[0]), (255, 0, 0), 2)
+                cv2.line(frame, (int(frame.shape[1]/7), 0), (int(frame.shape[1]/7), frame.shape[0]), (255, 0, 0), 2)
+                cv2.line(frame, (int(frame.shape[1]*6/7), 0), (int(frame.shape[1]*6/7), frame.shape[0]), (255, 0, 0), 2)
                 # car finder
                 for (x,y,w,h) in cars:
                     # check if vehicle exit from highway line (left border or right border)
                     # if attached to left border, vehicle is leaving from highway red box
                     # if attached to right border, vehicle is leaving from highway red box
                     # otherwise, vehicle is staying on highway green box
-                    if (x < int(frame.shape[1]/5)):
+                    if (x < int(frame.shape[1]/7)):
                         # anomaly var
-                        if (time.time() - cp_exit_road_1) > 3:
-                            sio.emit("anomaly-detected-1", {"type": "ANOMALY_CAR_EXIT_ROAD"})
-                            cp_exit_road_1 = time.time()
-                        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
+                        if (w > 50 and h > 50):
+                            if (time.time() - cp_exit_road_1) > 3:
+                                sio.emit("anomaly-detected-1", {"type": "ANOMALY_CAR_EXIT_ROAD"})
+                                cp_exit_road_1 = time.time()
+                            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
+                        # opencv color rgb is BGR
                         pass
-                    elif (x > int(frame.shape[1]*4/5)):
+                    elif (x > int(frame.shape[1]*6/7)):
                         # anomaly var
                         if (time.time() - cp_exit_road_1) > 3:
                             sio.emit("anomaly-detected-1", {"type": "ANOMALY_CAR_EXIT_ROAD"})
@@ -274,7 +345,8 @@ def proxy_frame_normal_1():
                         cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
                         pass
                     else:
-                        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+                        # rectangle color is green
+                        # cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
                         pass
                     pass
                 pass
@@ -337,23 +409,26 @@ def proxy_frame_normal_2():
                 # highway line borders
                 # left border is 1/4 of the screen width, right border is 3/4 of the screen width. 
                 # Notify with blue line
-                cv2.line(frame, (int(frame.shape[1]/5), 0), (int(frame.shape[1]/5), frame.shape[0]), (255, 0, 0), 2)
-                cv2.line(frame, (int(frame.shape[1]*4/5), 0), (int(frame.shape[1]*4/5), frame.shape[0]), (255, 0, 0), 2)
+                cv2.line(frame, (int(frame.shape[1]/7), 0), (int(frame.shape[1]/7), frame.shape[0]), (255, 0, 0), 2)
+                cv2.line(frame, (int(frame.shape[1]*6/7), 0), (int(frame.shape[1]*6/7), frame.shape[0]), (255, 0, 0), 2)
                 # car finder
                 for (x,y,w,h) in cars:
                     # check if vehicle exit from highway line (left border or right border)
                     # if attached to left border, vehicle is leaving from highway red box
                     # if attached to right border, vehicle is leaving from highway red box
                     # otherwise, vehicle is staying on highway green box
-                    if (x < int(frame.shape[1]/5) or x > int(frame.shape[1]*4/5)):
+                    if (x < int(frame.shape[1]/5) or x > int(frame.shape[1]*6/7)):
                         # anomaly var
-                        if (time.time() - cp_exit_road_2) > 3:
-                            sio.emit("anomaly-detected-2", {"type": "ANOMALY_CAR_EXIT_ROAD"})
-                            cp_exit_road_2 = time.time()
-                        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
+                        # if found anomly size is bigger than 25 px
+                        if (w > 50 and h > 50):
+                            if (time.time() - cp_exit_road_2) > 3:
+                                sio.emit("anomaly-detected-2", {"type": "ANOMALY_CAR_EXIT_ROAD"})
+                                cp_exit_road_2 = time.time()
+                            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
                         pass
                     else:
-                        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+                        # rectangle color is green
+                        # cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
                         pass
                     pass
                 pass

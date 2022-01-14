@@ -12,3 +12,8 @@
 
 # database
 /data
+
+
+# yolo
+yolo/*
+
